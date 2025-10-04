@@ -57,3 +57,108 @@ The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline
 +----------------+      +-------------------------+      |                    |      |                  |
 | noCRM.io Webhook|----->| Flask Webhook Service   |----->|                    |      |                  |
 +----------------+      +-------------------------+      +--------------------+      +------------------+
+```
+
+### 1. ETL & API Synchronization
+
+The ETL process is responsible for both the initial historical data load and the ongoing daily synchronization of new data.
+
+#### **Initial Historical Backfill Strategy**
+A significant challenge at the project's outset was retrieving the complete history of all leads and their associated actions dating back to **2018**. The noCRM.io API had a hard limit of **2,000 requests per day**, and with each lead potentially having hundreds of individual actions, a purely API-based backfill was mathematically impossible.
+
+To overcome this, a **hybrid strategy** was implemented:
+1.  **Initial Lead Ingestion:** A Python script (shown below) was used to paginate through the API and download the core data for every lead from all three company offices. This captured the primary lead details and the *last known action* for each.
+2.  **Full Action History Load:** We then requested a complete, one-time database export (as a file) directly from the noCRM.io support team. This file contained the full action history for every lead.
+3.  **Manual Data Ingestion:** Using the command-line interface for PostgreSQL, this historical action data was manually uploaded and inserted into the `action_history` table in the **Render** database.
+
+This approach successfully recreated the entire lead history by merging the manually uploaded data with the live data being captured by the webhooks, creating a complete and accurate historical record.
+
+#### **Daily Incremental Sync**
+For ongoing updates, a daily Python script runs as a scheduled cron job. It fetches all leads created or updated in the last 24 hours and uses an `INSERT OR REPLACE` command to keep the `leads` table current. This ensures that the core lead information remains up-to-date while the webhook handles real-time action events.
+
+**Example: Python Script for Initial Lead Ingestion**
+This script paginates through the entire history of the `leads` endpoint, handles timezone conversions for critical date fields, and stores the results in a local SQLite database before final upload. A similar process was run for each of the three company accounts.
+
+```python
+import requests
+import sqlite3
+import time
+from datetime import datetime
+import pytz
+
+# API and DB Configuration
+API_KEY = 'YOUR_NOCRM_API_KEY'
+URL = '[https://fiinbro.nocrm.io/api/v2/leads](https://fiinbro.nocrm.io/api/v2/leads)'
+DB_FILE = r'C:\sqlite\fiinbro_nocrm.db'
+HEADERS = {
+    'X-API-KEY': API_KEY,
+    'Accept': 'application/json'
+}
+LIMIT = 100
+
+# Timezone handling for accurate conversion
+crm_timezone = pytz.timezone('America/Chihuahua')
+
+def convert_to_crm_timezone(utc_datetime_str):
+    if not utc_datetime_str:
+        return None
+    try:
+        # Assumes format "YYYY-MM-DDTHH:MM:SS.sssZ"
+        utc_dt = datetime.strptime(utc_datetime_str, "%Y-m-%dT%H:%M:%S.%fZ")
+        utc_dt = utc_dt.replace(tzinfo=pytz.utc)
+        crm_dt = utc_dt.astimezone(crm_timezone)
+        return crm_dt.strftime("%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        return utc_datetime_str # Fallback for other formats
+
+# Date range for full historical pull
+start_date = '2018-01-01T00:00:00.000Z'
+end_date = '2025-12-31T23:59:59.999Z'
+
+offset = 0
+all_leads = []
+
+# Loop to paginate through all leads from the API
+while True:
+    params = {'limit': LIMIT, 'offset': offset, 'start_date': start_date, 'end_date': end_date}
+    response = requests.get(URL, headers=HEADERS, params=params)
+
+    if response.status_code != 200:
+        print(f"API Error: {response.status_code} {response.text}")
+        break
+
+    leads = response.json()
+    if not leads:
+        break # Exit loop when no more leads are returned
+
+    all_leads.extend(leads)
+    offset += LIMIT
+    time.sleep(0.2) # Polite pause to respect API limits
+
+# Connect to SQLite and insert data
+conn = sqlite3.connect(DB_FILE)
+cur = conn.cursor()
+
+for lead in all_leads:
+    # Prepare data tuple for insertion
+    data = (
+        lead.get("id"),
+        lead.get("title"),
+        lead.get("status"),
+        lead.get("amount"),
+        convert_to_crm_timezone(lead.get("created_at")),
+        convert_to_crm_timezone(lead.get("updated_at")),
+        convert_to_crm_timezone(lead.get("closed_at")),
+        lead.get("user_id"),
+        # ... other fields extracted here
+    )
+    # Use INSERT OR REPLACE to handle duplicates during re-runs
+    cur.execute('''
+        INSERT OR REPLACE INTO leads (
+            id, title, status, amount, created_at, updated_at, closed_at, user_id, ...
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ...)
+    ''', data)
+
+conn.commit()
+conn.close()
+print(f"Database updated with {len(all_leads)} total leads.")
