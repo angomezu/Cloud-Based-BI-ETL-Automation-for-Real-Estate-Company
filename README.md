@@ -62,7 +62,7 @@ The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline
 
 
 ---
-### Database and Reporting Structure
+### 3. Database Schema & Data Model
 
 The data from these webhooks feeds a structured reporting system in Power BI. The ecosystem is designed as follows:
 
