@@ -323,7 +323,7 @@ The application is built to handle multiple company accounts (e.g., `office_a`, 
 * **Secure & Robust**: The handler validates the account against a whitelist to prevent unauthorized access. It uses `psycopg2` with parameterized queries (`sql.Identifier`) to safely construct table names and prevent SQL injection. Database credentials are securely managed using environment variables.
 * **Event-Driven Functions**: Each webhook event (`lead.creation`, `lead.step.changed`, etc.) is mapped to a dedicated Python function that formats the payload and inserts it into the corresponding table. The `ON CONFLICT (id) DO NOTHING` clause ensures data integrity by preventing duplicate entries.
 
-#### Flask Webhook Handler (`app.py`)
+#### Flask Webhook Handler (`webhook_app.py`)
 
 This is the complete code for the webhook listener service.
 
