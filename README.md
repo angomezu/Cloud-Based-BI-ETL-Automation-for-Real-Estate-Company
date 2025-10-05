@@ -136,11 +136,6 @@ The data from these webhooks feeds a structured reporting system in Power BI. Th
       | raw_data           | jsonb     |
 
 
-* **Power BI Reports**: The real-time data from these tables is surfaced in Power BI through two distinct reports for each office:
-    * **Agent Report**: Provides individual sellers with a detailed view of their personal KPIs and lead portfolio.
-    * **Manager Report**: Offers a broader set of KPIs for the entire office, including both individual agent performance and overall team metrics.
-
-
 ### 2. ETL & API Synchronization
 
 The ETL process is responsible for both the initial historical data load and the ongoing daily synchronization of new data.
@@ -453,7 +448,7 @@ To keep the dashboards current, an **automatic refresh schedule** is configured 
 
 Each Power BI report (`.pbix` file) contains a sophisticated data model built on top of the imported data tables. To support complex analytical requirements, each model was heavily customized.
 
-* **Over 8 Calculated Tables:** Created using DAX to handle dimensions like dynamic calendars, sales goals (`Juarez_Meta_Anual`, `Meta_Mensual_Asesores`), and other helper tables that enrich the raw data.
+* **Over 8 Calculated Tables:** Created using DAX to handle dimensions like dynamic calendars, sales goals (`oficina_a_Meta_Anual`, `Meta_Mensual_Asesores`), and other helper tables that enrich the raw data.
 * **More than 60 DAX Measures:** A comprehensive library of custom measures was written to calculate key performance indicators (KPIs) such as conversion rates, ticket averages, sales funnel progression, and progress towards monthly and annual goals.
 
 This entire data model structure, including all calculated tables and measures, is replicated for both the Manager and Agent reports in each of the three offices, ensuring analytical consistency and scalability across the organization.
