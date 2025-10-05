@@ -468,3 +468,20 @@ Two primary types of dashboards were developed for each office to serve differen
 ![Seller Dashboard Example](./seller_example.png)
     ```
     ```
+
+## Deployment on Render
+
+The entire backend infrastructure for this project is hosted on Render, providing a scalable and easy-to-manage environment for both the web service and the database.
+
+### Web Service Configuration
+
+A single **Python web service** was deployed to handle all real-time data ingestion. Key features of this setup include:
+
+* **Git-Based Auto-Deploy:** The service is directly linked to the project's GitHub repository. Any push to the `main` branch automatically triggers a new deployment, ensuring the latest code is always live.
+* **Centralized Webhook Listener:** This single service is architected to process webhooks from all three distinct noCRM accounts. It uses the dynamic routing logic in the Flask `app.py` script to receive data and direct it to the appropriate database tables based on the incoming URL.
+
+### Database & Environment Management
+
+The PostgreSQL database is also a managed service on Render, co-located with the web service for low-latency connections.
+
+* **Secure Credential Management:** All sensitive information—including database connection details (`DB_HOST`, `DB_NAME`, `DB_PASS`), API keys (`NOCRM_API_KEY`), and other secrets—is managed using **Render's Environment Groups**. These secrets are securely injected into the application at runtime, avoiding the need to hardcode them in the source code. This single environment group provides the credentials needed for the service to connect to the database and populate the nine distinct tables (three for each office).
