@@ -31,7 +31,7 @@ All data is stored in a cloud-hosted PostgreSQL database on Render, which serves
 ## Key Features
 
 - **8 Interactive Power BI Dashboards:** Covering sales performance, pipeline tracking, executive activity, conversion rates, and monthly trends.
-- **Fully Automated Cloud ETL:** Python scripts run on a daily schedule to incrementally sync new and updated lead data from the noCRM.io API.
+- **Fully Automated Cloud ETL:** Python scripts run on a daily schedule to incrementally sync new and updated lead data from the the CRM API.
 - **Real-Time Event Ingestion:** A Flask webhook service instantly captures critical events like `lead.creation`, `lead.deleted`, and `lead.status.changed`.
 - **Cloud-Hosted Database:** A robust PostgreSQL instance on Render serves as the data warehouse, accessible directly by Power BI.
 - **Optimized Data Model:** A normalized schema with strategic indexing to ensure fast query performance for Power BI dashboards.
@@ -43,19 +43,19 @@ All data is stored in a cloud-hosted PostgreSQL database on Render, which serves
 - **Database:** PostgreSQL
 - **BI & Visualization:** Power BI (DAX, Power Query M)
 - **Cloud & Deployment:** Render (Web Service, PostgreSQL, Cron Jobs)
-- **Primary Data Source:** noCRM.io API & Webhooks
+- **Primary Data Source:** CRM API & Webhooks
 
 ## System Architecture
 
-The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline on Render.
+The data flows from the CRM API to Power BI through a cloud-hosted pipeline on Render.
 
 ```text
 +----------------+      +-------------------------+      +--------------------+      +------------------+
-| noCRM.io API   |----->| Python ETL History Script|---->|                    |      |                  |
+| CRM API   |----->| Python ETL History Script|---->|                    |      |                  |
 +----------------+      +-------------------------+      |  PostgreSQL DB     |----->|  Power BI        |
                                                          |  (on Render)       |      |  (AutoUpdates)   |
 +----------------+      +-------------------------+      |                    |      |                  |
-| noCRM.io Webhook|----->| Flask Webhook Service   |---->|                    |      |                  |
+| CRM Webhook|----->| Flask Webhook Service   |---->|                    |      |                  |
 +----------------+      +-------------------------+      +--------------------+      +------------------+
 ```
 
@@ -139,18 +139,18 @@ The data from these webhooks feeds a structured reporting system in Power BI. Th
 The ETL process is responsible for both the initial historical data load and the ongoing daily synchronization of new data.
 
 #### **Initial Historical Backfill Strategy**
-A significant challenge at the project's outset was retrieving the complete history of all leads and their associated actions dating back to **2018**. The noCRM.io API had a hard limit of **2,000 requests per day**, and with each lead potentially having hundreds of individual actions, a purely API-based backfill was mathematically impossible.
+A significant challenge at the project's outset was retrieving the complete history of all leads and their associated actions dating back to **2018**. The CRM API had a hard limit of **2,000 requests per day**, and with each lead potentially having hundreds of individual actions, a purely API-based backfill was mathematically impossible.
 
 To overcome this, a **hybrid strategy** was implemented:
 1.  **Initial Lead Ingestion:** A Python script (shown below) was used to paginate through the API and download the core data for every lead from all three company offices. This captured the primary lead details and the *last known action* for each and insert it in a local database.
-2.  **Full Action History Load:** We then requested a complete, one-time database export (as a file) directly from the noCRM.io support team. This file contained the full action history for every lead.
+2.  **Full Action History Load:** We then requested a complete, one-time database export (as a file) directly from the CRM support team. This file contained the full action history for every lead.
 3.  **Manual Data Ingestion:** Using the command-line interface for PostgreSQL, this historical action data was manually uploaded and inserted into the `action_history` table in the **Render** database.
 
 This approach successfully recreated the entire lead history by merging the manually uploaded data with the live data being captured by the webhooks, creating a complete and accurate historical record.
 
 ### Ongoing Data Synchronization via Webhooks
 
-After the initial historical backfill, all ongoing data updates are handled in **real-time using webhooks** configured between noCRM and the Flask API hosted on Render. This approach bypasses the need for daily API calls, ensuring that any change in the CRM is reflected in the PostgreSQL database within seconds.
+After the initial historical backfill, all ongoing data updates are handled in **real-time using webhooks** configured between CRM and the Flask API hosted on Render. This approach bypasses the need for daily API calls, ensuring that any change in the CRM is reflected in the PostgreSQL database within seconds.
 
 Four key webhooks are configured for each of the three company offices, which trigger on specific CRM events. Each webhook populates a corresponding table in the database to log the event and store its full JSON payload for traceability.
 
@@ -243,7 +243,7 @@ print(f"Database updated with {len(all_leads)} total leads.")
 
 ### 3. Real-Time Webhook Ingestion
 
-A lightweight Flask application, designed for cloud deployment, listens for incoming webhooks from noCRM.io. It acts as the real-time data ingestion engine, immediately processing events and inserting them into the appropriate PostgreSQL tables.
+A lightweight Flask application, designed for cloud deployment, listens for incoming webhooks from CRM.io. It acts as the real-time data ingestion engine, immediately processing events and inserting them into the appropriate PostgreSQL tables.
 
 #### Architecture & Logic
 
@@ -476,13 +476,13 @@ The entire backend infrastructure for this project is hosted on Render, providin
 A single **Python web service** was deployed to handle all real-time data ingestion. Key features of this setup include:
 
 * **Git-Based Auto-Deploy:** The service is directly linked to the project's GitHub repository. Any push to the `main` branch automatically triggers a new deployment, ensuring the latest code is always live.
-* **Centralized Webhook Listener:** This single service is architected to process webhooks from all three distinct noCRM accounts. It uses the dynamic routing logic in the Flask `app.py` script to receive data and direct it to the appropriate database tables based on the incoming URL.
+* **Centralized Webhook Listener:** This single service is architected to process webhooks from all three distinct CRM accounts. It uses the dynamic routing logic in the Flask `app.py` script to receive data and direct it to the appropriate database tables based on the incoming URL.
 
 ### Database & Environment Management
 
 The PostgreSQL database is also a managed service on Render, co-located with the web service for low-latency connections.
 
-* **Secure Credential Management:** All sensitive information—including database connection details (`DB_HOST`, `DB_NAME`, `DB_PASS`), API keys (`NOCRM_API_KEY`), and other secrets—is managed using **Render's Environment Groups**. These secrets are securely injected into the application at runtime, avoiding the need to hardcode them in the source code. This single environment group provides the credentials needed for the service to connect to the database and populate the nine distinct tables (three for each office).
+* **Secure Credential Management:** All sensitive information—including database connection details (`DB_HOST`, `DB_NAME`, `DB_PASS`), API keys (`CRM_API_KEY`), and other secrets—is managed using **Render's Environment Groups**. These secrets are securely injected into the application at runtime, avoiding the need to hardcode them in the source code. This single environment group provides the credentials needed for the service to connect to the database and populate the nine distinct tables (three for each office).
 * 
 
 ## Contact
