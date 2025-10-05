@@ -464,5 +464,7 @@ Two primary types of dashboards were developed for each office to serve differen
 ![Manager Dashboard Example](./manager_example.png)
     
 * **Agent Dashboard:** Designed for individual sales agents to track their personal performance. This report focuses on individual monthly and annual sales goals, personal conversion rates at each stage of the sales pipeline (e.g., `Firmados vs Ingresados`), and a detailed breakdown of their signed deals. This view empowers agents to monitor their own progress and identify areas for improvement.
+
+![Seller Dashboard Example](./seller_example.png)
     ```
     ```
