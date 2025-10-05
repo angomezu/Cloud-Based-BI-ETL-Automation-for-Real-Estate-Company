@@ -491,6 +491,8 @@ For more details or questions regarding measures, calculations, the code, the ar
 
 Angel Gomez - [angomezu@gmail.com](mailto:angomezu@gmail.com)
 
+LinkedIn: [https://www.linkedin.com/in/angomezu/](https://www.linkedin.com/in/angomezu/)
+
 GitHub Profile: [https://github.com/angomezu](https://github.com/angomezu)
 
 Project Link: [https://github.com/angomezu/Cloud-Based-CRM-ETL-to-PowerBI-Integration.git](https://github.com/angomezu/Cloud-Based-CRM-ETL-to-PowerBI-Integration.git)
