@@ -1,6 +1,6 @@
 # Cloud-Based-BI-ETL-Automation-for-Real-Estate-Company
 
-This project showcases a full-stack, cloud-native Business Intelligence platform built for SOC FIINBRO. It completely replaced a manual, Excel-based reporting workflow with a fully automated system that provides real-time analytics from the noCRM.io API into interactive Power BI dashboards.
+This project showcases a full-stack, cloud-native Business Intelligence platform built for a real estate company. It completely replaced a manual, Excel-based reporting workflow with a fully automated system that provides real-time analytics from the noCRM.io API into interactive Power BI dashboards.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ This project showcases a full-stack, cloud-native Business Intelligence platform
 
 ## About The Project
 
-The primary goal of this project was to eliminate manual data exports and empower FIINBRO's executive team with reliable, near real-time KPIs. The solution involved architecting a data pipeline that captures CRM data through two methods: a daily incremental API sync and real-time webhook ingestion for critical events.
+The primary goal of this project was to eliminate manual data exports and empower the company's executive team with reliable, near-real-time KPIs. The solution involved architecting a data pipeline that captures CRM data through two methods: a daily incremental API sync and real-time webhook ingestion for critical events.
 
 All data is stored in a cloud-hosted PostgreSQL database on Render, which serves as the single source of truth for a suite of 8 interactive Power BI dashboards.
 
@@ -166,9 +166,9 @@ from datetime import datetime
 import pytz
 
 # API and DB Configuration
-API_KEY = 'YOUR_NOCRM_API_KEY'
-URL = '[https://fiinbro.nocrm.io/api/v2/leads](https://fiinbro.nocrm.io/api/v2/leads)'
-DB_FILE = r'C:\sqlite\fiinbro_nocrm.db'
+API_KEY = 'API_KEY'
+URL = 'URL'
+DB_FILE = r'C:\sqlite\database.db'
 HEADERS = {
     'X-API-KEY': API_KEY,
     'Accept': 'application/json'
@@ -176,7 +176,7 @@ HEADERS = {
 LIMIT = 100
 
 # Timezone handling for accurate conversion
-crm_timezone = pytz.timezone('America/Chihuahua')
+crm_timezone = pytz.timezone('place time/zone here')
 
 def convert_to_crm_timezone(utc_datetime_str):
     if not utc_datetime_str:
