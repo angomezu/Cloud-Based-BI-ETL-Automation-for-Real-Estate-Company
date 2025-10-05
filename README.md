@@ -1,6 +1,6 @@
-# Cloud-Based-BI-ETL-Automation-for-Real-Estate-Company
+# Realtime-CRM-ETL-to-PowerBI-Integration-for-Real-Estate-Company
 
-This project showcases a full-stack, cloud-native Business Intelligence platform built for a real estate company. It completely replaced a manual, Excel-based reporting workflow with a fully automated system that provides real-time analytics from the noCRM.io API into interactive Power BI dashboards.
+A full-stack BI solution that uses Python webhooks to stream a CRM events into a PostgreSQL database, powering automated and comprehensive Power BI dashboards for a real estate company.
 
 ## Table of Contents
 
@@ -483,3 +483,12 @@ A single **Python web service** was deployed to handle all real-time data ingest
 The PostgreSQL database is also a managed service on Render, co-located with the web service for low-latency connections.
 
 * **Secure Credential Management:** All sensitive information—including database connection details (`DB_HOST`, `DB_NAME`, `DB_PASS`), API keys (`NOCRM_API_KEY`), and other secrets—is managed using **Render's Environment Groups**. These secrets are securely injected into the application at runtime, avoiding the need to hardcode them in the source code. This single environment group provides the credentials needed for the service to connect to the database and populate the nine distinct tables (three for each office).
+* 
+
+## Contact
+
+[cite_start]Angel Gomez - [angomezu@gmail.com](mailto:angomezu@gmail.com) [cite: 2]
+
+GitHub Profile: [https://github.com/angomezu](https://github.com/angomezu)
+
+Project Link: [https://github.com/angomezu/your-repo-name](https://github.com/angomezu/your-repo-name)
