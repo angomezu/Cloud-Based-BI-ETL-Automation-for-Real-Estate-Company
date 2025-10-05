@@ -66,18 +66,79 @@ The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline
 
 The data from these webhooks feeds a structured reporting system in Power BI. The ecosystem is designed as follows:
 
-* **Database Tables**: Each office has three primary tables that are populated by the webhooks:
+* **Database Tables**: Each office has three primary tables that are populated by the webhooks. Each table includes a `raw_data` column of type `jsonb` to store the complete, unaltered JSON payload from the webhook for full traceability and future analysis.
+
     * `lead_created`: This table logs an entry whenever a new lead is created for the first time.
+      *Table Structure:*
+      | Column Name        | Data Type |
+      | ------------------ | --------- |
+      | id                 | int8      |
+      | event              | text      |
+      | signature          | text      |
+      | has_succeeded      | bool      |
+      | try_count          | int4      |
+      | last_returned_code | int4      |
+      | received_at        | timestamp |
+      | lead_id            | int8      |
+      | title              | text      |
+      | status             | text      |
+      | step               | text      |
+      | amount             | numeric   |
+      | created_at_utc     | timestamp |
+      | updated_at_utc     | timestamp |
+      | user_email         | text      |
+      | permalink          | text      |
+      | raw_data           | jsonb     |
+      | client_folder_id   | int8      |
+      | client_folder_name | text      |
+
     * `step_changed`: A new row is added to this table every time an action or status change is applied to an existing lead, creating a complete event history.
+      *Table Structure:*
+      | Column Name        | Data Type   |
+      | ------------------ | ----------- |
+      | id                 | int8        |
+      | event              | text        |
+      | signature          | text        |
+      | has_succeeded      | bool        |
+      | try_count          | int4        |
+      | last_returned_code | int4        |
+      | received_at        | timestamptz |
+      | lead_id            | int8        |
+      | lead_title         | text        |
+      | lead_status        | text        |
+      | lead_step          | text        |
+      | lead_amount        | numeric     |
+      | lead_created_at    | timestamptz |
+      | lead_updated_at    | timestamptz |
+      | lead_user_email    | text        |
+      | lead_permalink     | text        |
+      | raw_data           | jsonb       |
+      | step_id            | int4        |
+      | pipeline           | text        |
+      | created_at_utc     | timestamptz |
+      | updated_at_utc     | timestamptz |
+      | moved_by           | text        |
+
     * `client_folder_created`: This table tracks the creation of new folders, which typically represent a new real estate agent who will manage a portfolio of leads.
+      *Table Structure:*
+      | Column Name        | Data Type |
+      | ------------------ | --------- |
+      | id                 | int8      |
+      | event              | text      |
+      | signature          | text      |
+      | has_succeeded      | bool      |
+      | try_count          | int4      |
+      | last_returned_code | int4      |
+      | received_at        | timestamp |
+      | folder_id          | int8      |
+      | folder_name        | text      |
+      | created_at_utc     | timestamp |
+      | raw_data           | jsonb     |
+
 
 * **Power BI Reports**: The real-time data from these tables is surfaced in Power BI through two distinct reports for each office:
     * **Agent Report**: Provides individual sellers with a detailed view of their personal KPIs and lead portfolio.
     * **Manager Report**: Offers a broader set of KPIs for the entire office, including both individual agent performance and overall team metrics.
-
-
-
-
 
 
 ### 1. ETL & API Synchronization
@@ -88,18 +149,11 @@ The ETL process is responsible for both the initial historical data load and the
 A significant challenge at the project's outset was retrieving the complete history of all leads and their associated actions dating back to **2018**. The noCRM.io API had a hard limit of **2,000 requests per day**, and with each lead potentially having hundreds of individual actions, a purely API-based backfill was mathematically impossible.
 
 To overcome this, a **hybrid strategy** was implemented:
-1.  **Initial Lead Ingestion:** A Python script (shown below) was used to paginate through the API and download the core data for every lead from all three company offices. This captured the primary lead details and the *last known action* for each.
+1.  **Initial Lead Ingestion:** A Python script (shown below) was used to paginate through the API and download the core data for every lead from all three company offices. This captured the primary lead details and the *last known action* for each and insert it in a local database.
 2.  **Full Action History Load:** We then requested a complete, one-time database export (as a file) directly from the noCRM.io support team. This file contained the full action history for every lead.
 3.  **Manual Data Ingestion:** Using the command-line interface for PostgreSQL, this historical action data was manually uploaded and inserted into the `action_history` table in the **Render** database.
 
 This approach successfully recreated the entire lead history by merging the manually uploaded data with the live data being captured by the webhooks, creating a complete and accurate historical record.
-
-#### **Daily Incremental Sync**
-For ongoing updates, a daily Python script runs as a scheduled cron job. It fetches all leads created or updated in the last 24 hours and uses an `INSERT OR REPLACE` command to keep the `leads` table current. This ensures that the core lead information remains up-to-date while the webhook handles real-time action events.
-
-**Example: Python Script for Initial Lead Ingestion**
-This script paginates through the entire history of the `leads` endpoint, handles timezone conversions for critical date fields, and stores the results in a local SQLite database before final upload. A similar process was run for each of the three company accounts.
-
 
 ### Ongoing Data Synchronization via Webhooks
 
