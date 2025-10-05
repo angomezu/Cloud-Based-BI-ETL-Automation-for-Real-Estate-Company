@@ -254,9 +254,9 @@ A lightweight Flask application, designed for cloud deployment, listens for inco
 
 #### Architecture & Logic
 
-The application is built to handle multiple company accounts (e.g., `juarez`, `enlace`, `laru`) from a single, scalable service.
+The application is built to handle multiple company accounts (e.g., `office_a`, `office_b`, `office_c`) from a single, scalable service.
 
-* **Dynamic Routing**: A single endpoint `/webhook/<account>` dynamically captures the account name from the URL. This allows the service to route data to the correct set of database tables (e.g., requests to `/webhook/juarez` will interact with tables like `juarez_lead_created`).
+* **Dynamic Routing**: A single endpoint `/webhook/<account>` dynamically captures the account name from the URL. This allows the service to route data to the correct set of database tables (e.g., requests to `/webhook/ofice_a` will interact with tables like `ofice_a_lead_created`).
 * **Secure & Robust**: The handler validates the account against a whitelist to prevent unauthorized access. It uses `psycopg2` with parameterized queries (`sql.Identifier`) to safely construct table names and prevent SQL injection. Database credentials are securely managed using environment variables.
 * **Event-Driven Functions**: Each webhook event (`lead.creation`, `lead.step.changed`, etc.) is mapped to a dedicated Python function that formats the payload and inserts it into the corresponding table. The `ON CONFLICT (id) DO NOTHING` clause ensures data integrity by preventing duplicate entries.
 
@@ -284,7 +284,7 @@ DB_PARAMS = {
 }
 
 # Whitelist of allowed account names to prevent SQL injection
-ALLOWED_ACCOUNTS = {'juarez', 'enlace', 'laru'}
+ALLOWED_ACCOUNTS = {'ofice_a', 'ofice_b', 'ofice_c'}
 
 def _get_client_folder(data: dict):
     """
