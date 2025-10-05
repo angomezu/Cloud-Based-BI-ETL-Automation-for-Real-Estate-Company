@@ -9,9 +9,9 @@ This project showcases a full-stack, cloud-native Business Intelligence platform
 - [Tech Stack](#tech-stack)
 - [System Architecture](#system-architecture)
 - [Core Components](#core-components)
-  - [1. ETL & API Synchronization](#1-etl--api-synchronization)
-  - [2. Real-Time Webhook Ingestion](#2-real-time-webhook-ingestion)
-  - [3. Database Schema & Data Model](#3-database-schema--data-model)
+  - [1. Database Schema & Data Model](#3-database-schema--data-model)
+  - [2. ETL & API Synchronization](#1-etl--api-synchronization)
+  - [3. Real-Time Webhook Ingestion](#2-real-time-webhook-ingestion)
   - [4. Power BI Implementation](#4-power-bi-implementation)
 - [Deployment on Render](#deployment-on-render)
 - [Contact](#contact)
@@ -62,7 +62,7 @@ The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline
 
 
 ---
-### 3. Database Schema & Data Model
+### 1. Database Schema & Data Model
 
 The data from these webhooks feeds a structured reporting system in Power BI. The ecosystem is designed as follows:
 
@@ -141,7 +141,7 @@ The data from these webhooks feeds a structured reporting system in Power BI. Th
     * **Manager Report**: Offers a broader set of KPIs for the entire office, including both individual agent performance and overall team metrics.
 
 
-### 1. ETL & API Synchronization
+### 2. ETL & API Synchronization
 
 The ETL process is responsible for both the initial historical data load and the ongoing daily synchronization of new data.
 
@@ -248,7 +248,7 @@ conn.close()
 print(f"Database updated with {len(all_leads)} total leads.")
 ```
 
-### 2. Real-Time Webhook Ingestion
+### 3. Real-Time Webhook Ingestion
 
 A lightweight Flask application, designed for cloud deployment, listens for incoming webhooks from noCRM.io. It acts as the real-time data ingestion engine, immediately processing events and inserting them into the appropriate PostgreSQL tables.
 
