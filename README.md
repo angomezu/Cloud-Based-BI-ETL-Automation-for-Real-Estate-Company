@@ -443,3 +443,24 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
 ```
+### 4. Power BI Implementation
+
+The final layer of this project is the Power BI visualization suite, which serves as the primary interface for business users. The reports connect directly to the PostgreSQL database on Render using a **DirectQuery** connection, ensuring all visuals reflect the latest data in real-time. This provides both office managers and individual agents with actionable, up-to-the-minute insights.
+
+#### Data Modeling & DAX
+
+Each Power BI report (`.pbix` file) contains a sophisticated data model built on top of the live database tables. To support complex analytical requirements, each model was heavily customized.
+
+* **Over 8 Calculated Tables:** Created using DAX to handle dimensions like dynamic calendars, sales goals (`Juarez_Meta_Anual`, `Meta_Mensual_Asesores`), and other helper tables that enrich the raw data.
+* **More than 60 DAX Measures:** A comprehensive library of custom measures was written to calculate key performance indicators (KPIs) such as conversion rates, ticket averages, sales funnel progression, and progress towards monthly and annual goals.
+
+This entire data model structure, including all calculated tables and measures, is replicated for both the Manager and Agent reports in each of the three offices, ensuring analytical consistency and scalability across the organization.
+
+#### Dashboard Showcase
+
+Two primary types of dashboards were developed for each office to serve different business needs:
+
+* **Manager Dashboard:** Provides a comprehensive, office-level overview of sales performance. It includes a full sales funnel (from referred to signed), ticket averages, total sales amounts, agent leaderboards, and progress against team-wide goals. The interface allows managers to filter results by month, year, and individual agent to get a clear picture of the team's health.
+    
+* **Agent Dashboard:** Designed for individual sales agents to track their personal performance. This report focuses on individual monthly and annual sales goals, personal conversion rates at each stage of the sales pipeline (e.g., `Firmados vs Ingresados`), and a detailed breakdown of their signed deals. This view empowers agents to monitor their own progress and identify areas for improvement.
+    ```
