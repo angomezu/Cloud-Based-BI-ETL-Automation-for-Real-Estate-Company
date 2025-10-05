@@ -14,7 +14,7 @@ A full-stack BI solution that uses Python webhooks to stream CRM events into a P
   - [3. Real-Time Webhook Ingestion](#3-real-time-webhook-ingestion)
   - [4. Power BI Implementation](#4-power-bi-implementation)
 - [Deployment on Render](#deployment-on-render)
-- [Contact](#contact)
+- [Final Notes and Contact](#final-notes-and-contact)
 
 ## About The Project
 
@@ -555,7 +555,9 @@ The PostgreSQL database is also a managed service on Render, co-located with the
 * **Secure Credential Management:** All sensitive information—including database connection details (`DB_HOST`, `DB_NAME`, `DB_PASS`), API keys (`CRM_API_KEY`), and other secrets—is managed using **Render's Environment Groups**. These secrets are securely injected into the application at runtime, avoiding the need to hardcode them in the source code. This single environment group provides the credentials needed for the service to connect to the database and populate the nine distinct tables (three for each office).
 
 
-## Contact
+## Final Notes and Contact
+
+If I get any people interested in getting the full PBIXs, DAX measures, and scripts, then I'll make sure to upload those files with the necessary mock data.
 
 For more details or questions regarding measures, calculations, the code, the architecture, or general inquires, contact me:
 
