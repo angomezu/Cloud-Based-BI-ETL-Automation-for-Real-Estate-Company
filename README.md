@@ -59,6 +59,27 @@ The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline
 +----------------+      +-------------------------+      +--------------------+      +------------------+
 ```
 
+
+
+---
+### Database and Reporting Structure
+
+The data from these webhooks feeds a structured reporting system in Power BI. The ecosystem is designed as follows:
+
+* **Database Tables**: Each office has three primary tables that are populated by the webhooks:
+    * `lead_created`: This table logs an entry whenever a new lead is created for the first time.
+    * `step_changed`: A new row is added to this table every time an action or status change is applied to an existing lead, creating a complete event history.
+    * `client_folder_created`: This table tracks the creation of new folders, which typically represent a new real estate agent who will manage a portfolio of leads.
+
+* **Power BI Reports**: The real-time data from these tables is surfaced in Power BI through two distinct reports for each office:
+    * **Agent Report**: Provides individual sellers with a detailed view of their personal KPIs and lead portfolio.
+    * **Manager Report**: Offers a broader set of KPIs for the entire office, including both individual agent performance and overall team metrics.
+
+
+
+
+
+
 ### 1. ETL & API Synchronization
 
 The ETL process is responsible for both the initial historical data load and the ongoing daily synchronization of new data.
@@ -78,6 +99,15 @@ For ongoing updates, a daily Python script runs as a scheduled cron job. It fetc
 
 **Example: Python Script for Initial Lead Ingestion**
 This script paginates through the entire history of the `leads` endpoint, handles timezone conversions for critical date fields, and stores the results in a local SQLite database before final upload. A similar process was run for each of the three company accounts.
+
+
+### Ongoing Data Synchronization via Webhooks
+
+After the initial historical backfill, all ongoing data updates are handled in **real-time using webhooks** configured between noCRM and the Flask API hosted on Render. This approach bypasses the need for daily API calls, ensuring that any change in the CRM is reflected in the PostgreSQL database within seconds.
+
+Four key webhooks are configured for each of the three company offices, which trigger on specific CRM events. Each webhook populates a corresponding table in the database to log the event and store its full JSON payload for traceability.
+
+This is an example of how the script to get the Initial Lead Ingestion using the API looks:
 
 ```python
 import requests
