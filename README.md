@@ -51,15 +51,13 @@ The data flows from the noCRM.io API to Power BI through a cloud-hosted pipeline
 
 ```text
 +----------------+      +-------------------------+      +--------------------+      +------------------+
-| noCRM.io API   |----->| Daily Python ETL Script |----->|                    |      |                  |
+| noCRM.io API   |----->| Python ETL History Script|---->|                    |      |                  |
 +----------------+      +-------------------------+      |  PostgreSQL DB     |----->|  Power BI        |
-                                                         |  (on Render)       |      |  (DirectQuery)   |
+                                                         |  (on Render)       |      |  (AutoUpdates)   |
 +----------------+      +-------------------------+      |                    |      |                  |
-| noCRM.io Webhook|----->| Flask Webhook Service   |----->|                    |      |                  |
+| noCRM.io Webhook|----->| Flask Webhook Service   |---->|                    |      |                  |
 +----------------+      +-------------------------+      +--------------------+      +------------------+
 ```
-
-
 
 ---
 ### 1. Database Schema & Data Model
