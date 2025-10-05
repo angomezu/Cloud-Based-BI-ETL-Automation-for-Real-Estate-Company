@@ -458,12 +458,10 @@ This entire data model structure, including all calculated tables and measures, 
 Two primary types of dashboards were developed for each office to serve different business needs:
 
 * **Manager Dashboard:** Provides a comprehensive, office-level overview of sales performance. It includes a full sales funnel (from referred to signed), ticket averages, total sales amounts, agent leaderboards, and progress against team-wide goals. The interface allows managers to filter results by month, year, and individual agent to get a clear picture of the team's health.
-* 
+
+*Some parts have been blurred.*
 
 ![Manager Dashboard Example](./manager_example.png)
-
-
-
     
 * **Agent Dashboard:** Designed for individual sales agents to track their personal performance. This report focuses on individual monthly and annual sales goals, personal conversion rates at each stage of the sales pipeline (e.g., `Firmados vs Ingresados`), and a detailed breakdown of their signed deals. This view empowers agents to monitor their own progress and identify areas for improvement.
     ```
