@@ -1,6 +1,6 @@
 # Cloud-Based-CRM-ETL-to-PowerBI-Integration
 
-A full-stack BI solution that uses Python webhooks to stream CRM events into a web-hosted PostgreSQL database, powering automated and comprehensive Power BI dashboards for a real estate company.
+A full-stack BI solution that uses Python webhooks to stream CRM events into a PostgreSQL database hosted on Render, powering automated and on-demand Power BI dashboards for a real estate company.
 
 ## Table of Contents
 
