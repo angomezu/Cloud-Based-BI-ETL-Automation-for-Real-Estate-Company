@@ -487,7 +487,7 @@ The PostgreSQL database is also a managed service on Render, co-located with the
 
 ## Contact
 
-[cite_start]Angel Gomez - [angomezu@gmail.com](mailto:angomezu@gmail.com) [cite: 2]
+Angel Gomez - [angomezu@gmail.com](mailto:angomezu@gmail.com)
 
 GitHub Profile: [https://github.com/angomezu](https://github.com/angomezu)
 
