@@ -483,9 +483,11 @@ A single **Python web service** was deployed to handle all real-time data ingest
 The PostgreSQL database is also a managed service on Render, co-located with the web service for low-latency connections.
 
 * **Secure Credential Management:** All sensitive information—including database connection details (`DB_HOST`, `DB_NAME`, `DB_PASS`), API keys (`CRM_API_KEY`), and other secrets—is managed using **Render's Environment Groups**. These secrets are securely injected into the application at runtime, avoiding the need to hardcode them in the source code. This single environment group provides the credentials needed for the service to connect to the database and populate the nine distinct tables (three for each office).
-* 
+
 
 ## Contact
+
+For more details or questions regarding measures, calculations, the code, the architecture, or general inquires, contact me:
 
 Angel Gomez - [angomezu@gmail.com](mailto:angomezu@gmail.com)
 
